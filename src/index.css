@@ -1,19 +1,20 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
+/* Default Dark Theme variables on root */
 :root {
-  /* Premium Dark Theme Default Palette */
-  --bg-primary: #0a0c10;
-  --bg-surface: rgba(18, 22, 30, 0.7);
-  --bg-surface-solid: #12161e;
-  --bg-glass: rgba(18, 22, 30, 0.45);
+  --bg-primary: #000000; /* Monochrome black */
+  --bg-surface: rgba(18, 18, 18, 0.7);
+  --bg-surface-solid: #121212;
+  --bg-glass: rgba(18, 18, 18, 0.45);
   
   --border-light: rgba(255, 255, 255, 0.08);
   --border-medium: rgba(255, 255, 255, 0.12);
   
-  --accent-color: #6366f1; /* Indigo */
-  --accent-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-  --accent-light: rgba(99, 102, 241, 0.15);
-  --accent-glow: rgba(99, 102, 241, 0.35);
+  --accent-color: #ffffff; /* Monochrome white accent */
+  --accent-gradient: #ffffff;
+  --accent-light: rgba(255, 255, 255, 0.1);
+  --accent-glow: rgba(255, 255, 255, 0.15);
+  --accent-contrast: #000000; /* Black text on white accent */
 
   --text-primary: #f8fafc;
   --text-secondary: #94a3b8;
@@ -24,25 +25,68 @@
   --transition-fast: all 0.15s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
+/* Light Theme Modular Override */
+.app-layout[data-theme="light"] {
+  --bg-primary: #ffffff;
+  --bg-surface: rgba(240, 240, 240, 0.75);
+  --bg-surface-solid: #f5f5f5;
+  --bg-glass: rgba(240, 240, 240, 0.5);
+  
+  --border-light: rgba(0, 0, 0, 0.06);
+  --border-medium: rgba(0, 0, 0, 0.1);
+  
+  --accent-color: #000000;
+  --accent-gradient: #000000;
+  --accent-light: rgba(0, 0, 0, 0.08);
+  --accent-glow: rgba(0, 0, 0, 0.1);
+  --accent-contrast: #ffffff; /* White text on black accent */
+
+  --text-primary: #000000;
+  --text-secondary: #4a4a4a;
+  --text-muted: #8a8a8a;
+}
+
+/* Dark Theme Modular Override */
+.app-layout[data-theme="dark"] {
+  --bg-primary: #000000;
+  --bg-surface: rgba(18, 18, 18, 0.7);
+  --bg-surface-solid: #121212;
+  --bg-glass: rgba(18, 18, 18, 0.45);
+  
+  --border-light: rgba(255, 255, 255, 0.08);
+  --border-medium: rgba(255, 255, 255, 0.12);
+  
+  --accent-color: #ffffff;
+  --accent-gradient: #ffffff;
+  --accent-light: rgba(255, 255, 255, 0.1);
+  --accent-glow: rgba(255, 255, 255, 0.15);
+  --accent-contrast: #000000; /* Black text on white accent */
+
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+}
+
+/* Fallback to System Preference if no override is set */
 @media (prefers-color-scheme: light) {
-  :root {
-    /* Premium Glass Light Theme */
-    --bg-primary: #f4f6fa;
-    --bg-surface: rgba(255, 255, 255, 0.75);
-    --bg-surface-solid: #ffffff;
-    --bg-glass: rgba(255, 255, 255, 0.5);
+  .app-layout:not([data-theme]) {
+    --bg-primary: #ffffff;
+    --bg-surface: rgba(240, 240, 240, 0.75);
+    --bg-surface-solid: #f5f5f5;
+    --bg-glass: rgba(240, 240, 240, 0.5);
     
     --border-light: rgba(0, 0, 0, 0.06);
     --border-medium: rgba(0, 0, 0, 0.1);
     
-    --accent-color: #4f46e5;
-    --accent-gradient: linear-gradient(135deg, #4f46e5 0%, #9333ea 100%);
-    --accent-light: rgba(79, 70, 229, 0.08);
-    --accent-glow: rgba(79, 70, 229, 0.2);
+    --accent-color: #000000;
+    --accent-gradient: #000000;
+    --accent-light: rgba(0, 0, 0, 0.08);
+    --accent-glow: rgba(0, 0, 0, 0.1);
+    --accent-contrast: #ffffff; /* White text on black accent */
 
-    --text-primary: #0f172a;
-    --text-secondary: #475569;
-    --text-muted: #94a3b8;
+    --text-primary: #000000;
+    --text-secondary: #4a4a4a;
+    --text-muted: #8a8a8a;
   }
 }
 
@@ -80,7 +124,7 @@ body {
   right: 5%;
   width: 50vw;
   height: 50vw;
-  background: radial-gradient(circle, rgba(99, 102, 241, 0.12) 0%, rgba(0, 0, 0, 0) 70%);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.02) 0%, rgba(0, 0, 0, 0) 70%);
   border-radius: 50%;
   filter: blur(80px);
 }
@@ -91,14 +135,15 @@ body {
   left: -5%;
   width: 45vw;
   height: 45vw;
-  background: radial-gradient(circle, rgba(168, 85, 247, 0.08) 0%, rgba(0, 0, 0, 0) 70%);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.01) 0%, rgba(0, 0, 0, 0) 70%);
   border-radius: 50%;
   filter: blur(80px);
 }
 
 #root {
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  max-width: 100%;
+  min-height: 100vh;
   position: relative;
   z-index: 1;
 }
@@ -108,12 +153,15 @@ body {
   display: grid;
   grid-template-columns: auto 1fr;
   width: 100%;
-  height: 100vh;
+  max-width: 100%;
+  min-height: 100vh;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .app-main {
   grid-column: 2;
-  overflow-y: auto;
   padding: 40px;
   display: flex;
   flex-direction: column;
@@ -156,4 +204,53 @@ body {
     padding: 24px;
     padding-bottom: 96px;
   }
+}
+
+/* Professional Switch Toggle */
+.switch-container {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+}
+
+.switch-input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.switch-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--border-medium);
+  transition: 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  border-radius: 24px;
+  border: 1px solid var(--border-light);
+}
+
+.switch-slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 3px;
+  bottom: 3px;
+  background-color: var(--text-secondary);
+  transition: 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  border-radius: 50%;
+}
+
+.switch-input:checked + .switch-slider {
+  background-color: var(--accent-light);
+  border-color: var(--accent-color);
+}
+
+.switch-input:checked + .switch-slider:before {
+  transform: translateX(20px);
+  background-color: var(--accent-color);
 }

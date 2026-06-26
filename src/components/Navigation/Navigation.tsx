@@ -44,7 +44,7 @@ export interface NavigationItem {
 
 export const navigationItems: NavigationItem[] = [
   { id: 'dashboard', label: 'Dashboard', category: 'core', icon: Icons.Dashboard },
-  { id: 'inventory', label: 'Inventory (WMS)', category: 'operations', icon: Icons.Inventory },
+  { id: 'inventory', label: 'Inventory', category: 'operations', icon: Icons.Inventory },
   { id: 'supply', label: 'Supply Chain', category: 'operations', icon: Icons.SupplyChain },
   { id: 'partners', label: 'Partners', category: 'operations', icon: Icons.Partners },
   { id: 'finance', label: 'Finance & Ledger', category: 'management', icon: Icons.Finance },
@@ -56,12 +56,16 @@ interface NavigationProps {
   activeView: string;
   onViewChange: (view: string) => void;
   onSearchTrigger: () => void;
+  logoText?: string;
 }
 
-export const Navigation: React.FC<NavigationProps> = ({ activeView, onViewChange, onSearchTrigger }) => {
+export const Navigation: React.FC<NavigationProps> = ({ activeView, onViewChange, onSearchTrigger, logoText }) => {
   const [viewport, setViewport] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
   const [isExpanded, setIsExpanded] = useState(true);
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
+  const [dragY, setDragY] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const [touchStart, setTouchStart] = useState(0);
 
   useEffect(() => {
     const handleResize = () => {
@@ -79,6 +83,28 @@ export const Navigation: React.FC<NavigationProps> = ({ activeView, onViewChange
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStart(e.targetTouches[0].clientY);
+    setIsDragging(true);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isDragging) return;
+    const currentY = e.targetTouches[0].clientY;
+    const deltaY = currentY - touchStart;
+    if (deltaY > 0) {
+      setDragY(deltaY);
+    }
+  };
+
+  const handleTouchEnd = () => {
+    setIsDragging(false);
+    if (dragY > 80) {
+      setIsBottomSheetOpen(false);
+    }
+    setDragY(0);
+  };
 
   const handleMobileNavClick = (itemId: string) => {
     if (itemId === 'more') {
@@ -105,7 +131,7 @@ export const Navigation: React.FC<NavigationProps> = ({ activeView, onViewChange
           <button className={styles['menu-toggle-btn']} onClick={() => setIsExpanded(!isExpanded)} aria-label="Toggle Navigation">
             <Icons.Menu />
           </button>
-          {isExpanded && <span className={styles['logo-text']}>CBIMS ERP</span>}
+          {isExpanded && <span className={styles['logo-text']}>{logoText || 'CBIMS ERP'}</span>}
         </div>
 
         <button className={styles['drawer-search-bar']} onClick={onSearchTrigger}>
@@ -184,7 +210,7 @@ export const Navigation: React.FC<NavigationProps> = ({ activeView, onViewChange
   return (
     <>
       <header className={styles['mobile-header']}>
-        <span className={styles['mobile-logo']}>CBIMS</span>
+        <span className={styles['mobile-logo']}>{logoText || 'CBIMS'}</span>
         <button className={styles['mobile-search-btn']} onClick={onSearchTrigger}>
           <Icons.Search />
         </button>
@@ -221,9 +247,30 @@ export const Navigation: React.FC<NavigationProps> = ({ activeView, onViewChange
       {/* Bottom Sheet Modal for secondary items */}
       {isBottomSheetOpen && (
         <div className={styles['bottom-sheet-overlay']} onClick={() => setIsBottomSheetOpen(false)}>
-          <div className={styles['bottom-sheet-content']} onClick={e => e.stopPropagation()}>
-            <div className={styles['bottom-sheet-handle']} onClick={() => setIsBottomSheetOpen(false)} />
-            <div className={styles['bottom-sheet-title']}>More Modules</div>
+          <div
+            className={styles['bottom-sheet-content']}
+            onClick={e => e.stopPropagation()}
+            style={{
+              transform: `translateY(${dragY}px)`,
+              transition: isDragging ? 'none' : 'transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)'
+            }}
+          >
+            {/* Draggable Header Area */}
+            <div
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+              style={{
+                cursor: 'grab',
+                touchAction: 'none',
+                paddingBottom: 8,
+                marginTop: -4
+              }}
+            >
+              <div className={styles['bottom-sheet-handle']} style={{ height: 6, width: 48, borderRadius: 3 }} />
+              <div className={styles['bottom-sheet-title']} style={{ textAlign: 'center', userSelect: 'none', margin: '12px 0 20px 0' }}>More Modules</div>
+            </div>
+            
             <div className={styles['bottom-sheet-grid']}>
               {secondaryMobileItems.map(item => {
                 const IconComponent = item.icon;
@@ -233,11 +280,12 @@ export const Navigation: React.FC<NavigationProps> = ({ activeView, onViewChange
                     key={item.id}
                     className={`${styles['sheet-item-btn']} ${isActive ? styles.active : ''}`}
                     onClick={() => handleMobileNavClick(item.id)}
+                    style={{ padding: '8px 4px' }}
                   >
-                    <div className={styles['sheet-icon-wrapper']}>
+                    <div className={styles['sheet-icon-wrapper']} style={{ width: '100%', height: 48, borderRadius: 14 }}>
                       <IconComponent />
                     </div>
-                    <span className={styles['sheet-label']}>{item.label}</span>
+                    <span className={styles['sheet-label']} style={{ fontSize: '0.75rem', marginTop: 4 }}>{item.label}</span>
                   </button>
                 );
               })}
