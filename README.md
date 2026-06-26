@@ -16,56 +16,64 @@ CBIMS is engineered to be a comprehensive business management command center. Ou
 
 ## 📦 System Modules
 
-CBIMS scales beyond simple inventory to include the following core ERP modules:
+### 🟢 Implemented / Scaffolded Modules
+*   **Navigation System:** Responsive sidebar layout featuring interactive categorization (Core, Operations, Management).
+*   **Dashboard:** Main overview workspace layout.
+*   **Inventory (WMS):** Scaffolded layout structure.
+*   **Supply Chain:** Scaffolded procurement layout.
+*   **Partners:** Scaffolded CRM/SRM portal.
+*   **Finance & Ledger:** Scaffolded accounting workspace.
+*   **Human Resources:** Scaffolded staff management panel.
+*   **Command Palette:** Intelligent global search and quick navigation panel activated by hotkey (`Ctrl + K`).
 
-### 1. Inventory & Asset Management (Core WMS)
-*   **Multi-Warehouse Tracking:** Real-time tracking of stock levels across multiple geographical locations.
-*   **Unit of Measure (UOM) Engine:** Dynamic UOM conversions (e.g., pallets to boxes, boxes to units).
-*   **Smart Reordering & Alerts:** Automated stock replenishment recommendations based on lead times and safety stock levels.
-
-### 2. Partner Directory (CRM & SRM)
-*   **Supplier Relationship Management (SRM):** Performance scorecards, contract management, and lead-time tracking.
-*   **Customer Relationship Management (CRM):** Order history, customer credit limits, and interaction logs.
-
-### 3. Supply Chain & Procurement
-*   **Purchase Orders (PO):** Automation of PO generation, authorization workflows, and receiving logs.
-*   **Sales Orders (SO):** Fulfillment tracking, invoice generation, and dispatch scheduling.
-
-### 4. Financials & Accounting (New ERP Layer)
-*   **General Ledger & Journals:** Automated booking of inventory valuations, cost of goods sold (COGS), and sales revenue.
-*   **Accounts Payable/Receivable:** Tracking invoices, bill payments, and cash-flow forecasting.
-
-### 5. Multi-User, RBAC & Security
-*   **Role-Based Access Control:** Pre-configured roles (Admin, Warehouse Manager, Accountant, Procurement Specialist) with custom permission matrices.
-*   **Session & Security Logging:** Detailed audit trails tracking all insert, update, and delete actions.
+### 🟡 Proposed / Planned Modules
+*   **Multi-Warehouse Tracking:** Real-time stock levels sync across geographical locations.
+*   **Unit of Measure (UOM) Engine:** Dynamic unit conversions (e.g. Pallets to Boxes to Units).
+*   **Smart Reordering & Alerts:** Automated safety stock replenishment triggers.
+*   **Supplier & Customer Directory:** Performance scorecards, contract tracking, credit limits, and logs.
+*   **PO & SO Workflows:** Automatic PO generation, approvals, and dispatch fulfillment tracking.
+*   **General Ledger & Journals:** Double-entry journal postings for inventory valuations, COGS, and sales revenues.
+*   **Access Control (RBAC):** Granular user role permissions matrix and system-wide audit logging.
 
 ---
 
-## 🛠️ Proposed Tech Stack
+## 🛠️ Tech Stack
 
-To ensure high performance and structured maintainability, CBIMS leverages:
+### 🟢 Actual Tech Stack
+*   **Frontend:** React (v18.3) with TypeScript.
+*   **Build Tool:** Vite (v5.3).
+*   **Styling:** CSS Modules & Vanilla CSS with custom design system variables.
+*   **State Management:** React local state (`useState`, `useEffect`) and props.
 
-*   **Frontend:** React / Next.js with TypeScript for typed safety and modular UI component development.
-*   **Styling:** Modern CSS / CSS Modules with variable-driven design systems (supporting Dark/Light themes).
-*   **State Management:** Redux Toolkit or React Context API for global state sync.
-*   **Backend Services:** Node.js (Express / NestJS) for server-side logic and robust API gateways.
-*   **Database:** PostgreSQL (with Prisma or TypeORM) for relational transaction safety, alongside Redis for caching.
+### 🟡 Proposed / Planned Additions
+*   **Global State Management:** Redux Toolkit or React Context API.
+*   **Backend Services:** Node.js (Express / NestJS) API gateway.
+*   **Database:** PostgreSQL (with Prisma or TypeORM) for transactional safety, and Redis for caching.
 
 ---
 
-## 📂 Proposed Project Structure
+## 📂 Current Project Structure
 
 ```directory
 CBIMS/
-├── apps/                         # Monorepo workspaces or applications
-│   ├── web/                      # Main Next.js/React frontend app
-│   └── api/                      # Backend services API
-├── packages/                     # Shared workspaces
-│   ├── database/                 # Prisma schemas, migrations, and seeds
-│   ├── ui/                       # Shared design system & React component library
-│   └── config/                   # ESLint, TSConfig, and build configurations
-├── docs/                         # Extended API and developer documentation
-└── README.md                     # Project entry point
+├── src/
+│   ├── components/
+│   │   └── Navigation/
+│   │       ├── CommandPalette.module.css
+│   │       ├── CommandPalette.tsx
+│   │       ├── Navigation.module.css
+│   │       └── Navigation.tsx
+│   ├── App.tsx
+│   ├── index.css
+│   ├── main.tsx
+│   └── vite-env.d.ts
+├── CHANGELOG.md
+├── index.html
+├── package.json
+├── README.md
+├── tsconfig.json
+├── tsconfig.node.json
+└── vite.config.ts
 ```
 
 ---
@@ -80,8 +88,3 @@ CBIMS/
 *   [Docker](https://www.docker.com/) (recommended for local PostgreSQL/Redis environments)
 
 ---
-
-## 📜 Version History
-
-*   **v1.0.0 (CloudBased):** The initial single-user/basic multi-user asset tracking platform.
-*   **v2.0.0 (CBIMS):** Comprehensive ERP expansion with modular design, full double-entry ledger integration, and multi-warehouse capabilities.

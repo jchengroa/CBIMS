@@ -1,0 +1,159 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  /* Premium Dark Theme Default Palette */
+  --bg-primary: #0a0c10;
+  --bg-surface: rgba(18, 22, 30, 0.7);
+  --bg-surface-solid: #12161e;
+  --bg-glass: rgba(18, 22, 30, 0.45);
+  
+  --border-light: rgba(255, 255, 255, 0.08);
+  --border-medium: rgba(255, 255, 255, 0.12);
+  
+  --accent-color: #6366f1; /* Indigo */
+  --accent-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+  --accent-light: rgba(99, 102, 241, 0.15);
+  --accent-glow: rgba(99, 102, 241, 0.35);
+
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+
+  --font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --transition-smooth: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  --transition-fast: all 0.15s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    /* Premium Glass Light Theme */
+    --bg-primary: #f4f6fa;
+    --bg-surface: rgba(255, 255, 255, 0.75);
+    --bg-surface-solid: #ffffff;
+    --bg-glass: rgba(255, 255, 255, 0.5);
+    
+    --border-light: rgba(0, 0, 0, 0.06);
+    --border-medium: rgba(0, 0, 0, 0.1);
+    
+    --accent-color: #4f46e5;
+    --accent-gradient: linear-gradient(135deg, #4f46e5 0%, #9333ea 100%);
+    --accent-light: rgba(79, 70, 229, 0.08);
+    --accent-glow: rgba(79, 70, 229, 0.2);
+
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #94a3b8;
+  }
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Elegant Background Glow Effects */
+.bg-glow-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.bg-glow-1 {
+  position: absolute;
+  top: -10%;
+  right: 5%;
+  width: 50vw;
+  height: 50vw;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.12) 0%, rgba(0, 0, 0, 0) 70%);
+  border-radius: 50%;
+  filter: blur(80px);
+}
+
+.bg-glow-2 {
+  position: absolute;
+  bottom: -10%;
+  left: -5%;
+  width: 45vw;
+  height: 45vw;
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.08) 0%, rgba(0, 0, 0, 0) 70%);
+  border-radius: 50%;
+  filter: blur(80px);
+}
+
+#root {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  z-index: 1;
+}
+
+/* Layout Grid */
+.app-layout {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  width: 100%;
+  height: 100vh;
+}
+
+.app-main {
+  grid-column: 2;
+  overflow-y: auto;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  background: transparent;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-medium);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+@media (max-width: 1024px) {
+  .app-main {
+    padding: 32px;
+  }
+}
+
+@media (max-width: 600px) {
+  .app-layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr auto;
+  }
+  .app-main {
+    grid-column: 1;
+    grid-row: 2;
+    padding: 24px;
+    padding-bottom: 96px;
+  }
+}
