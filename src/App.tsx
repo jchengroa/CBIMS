@@ -4,23 +4,35 @@ import { CommandPalette } from './components/Navigation/CommandPalette';
 import { SettingsModule } from './modules/Settings/SettingsModule';
 import { GlowElements } from './components/Common/GlowElements';
 import { GlassCard } from './components/Common/GlassCard';
+import { LoginScreen } from './components/Login/LoginScreen';
 import { useCommandPalette } from './hooks/useCommandPalette';
-import { useFlags } from './hooks/useFlags';
+import { useFlags, FeatureFlag } from './hooks/useFlags';
+import { useAuth } from './hooks/useAuth';
+import { ProfileModule } from './modules/Profile/ProfileModule';
 
 function App() {
   const [activeView, setActiveView] = useState('dashboard');
   const palette = useCommandPalette();
   const { flags, updateFlag } = useFlags();
-  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
-    if (typeof window !== 'undefined' && window.matchMedia) {
-      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    }
-    return 'light';
-  });
+  const { user, login, logout, updateUser } = useAuth();
+  const [theme, setTheme] = useState<'dark' | 'light'>('light');
 
-  const companyAlias = flags.find(f => f.id === 'developer-company-alias')?.value || 'CBIMS ERP';
-  const enableDoubleLedger = flags.find(f => f.id === 'enable-double-ledger')?.value;
-  const wmsLayoutVersion = flags.find(f => f.id === 'wms-layout-version')?.value || 'v1-grid';
+  const companyAlias = flags.find((f: FeatureFlag) => f.id === 'developer-company-alias')?.value || 'CBIMS ERP';
+  const enableDoubleLedger = flags.find((f: FeatureFlag) => f.id === 'enable-double-ledger')?.value;
+  const wmsLayoutVersion = flags.find((f: FeatureFlag) => f.id === 'wms-layout-version')?.value || 'v1-grid';
+  const loginFieldType = flags.find((f: FeatureFlag) => f.id === 'login-field-type')?.value || 'Username / Email';
+
+  if (!user) {
+    return (
+      <div className="app-layout" data-theme={theme} style={{ display: 'block' }}>
+        <LoginScreen
+          logoText={companyAlias}
+          fieldType={loginFieldType}
+          onLogin={(username, password) => login(username, password, loginFieldType)}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="app-layout" data-theme={theme}>
@@ -31,6 +43,8 @@ function App() {
         onViewChange={setActiveView}
         onSearchTrigger={palette.open}
         logoText={companyAlias}
+        user={user}
+        onLogout={logout}
       />
 
       <main className="app-main">
@@ -56,6 +70,12 @@ function App() {
               onThemeChange={setTheme}
               flags={flags}
               onUpdateFlag={updateFlag}
+              userRole={user?.role}
+            />
+          ) : activeView === 'profile' && user ? (
+            <ProfileModule
+              user={user}
+              onUpdateUser={updateUser}
             />
           ) : activeView === 'finance' ? (
             enableDoubleLedger ? (

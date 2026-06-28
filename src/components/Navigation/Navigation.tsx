@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import styles from './Navigation.module.css';
+import { User } from '../../hooks/useAuth';
 
 // SVG Icons for MD3 aesthetic
 const Icons = {
+  Logout: () => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={styles['nav-icon']}><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" /></svg>
+  ),
   Dashboard: () => (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={styles['nav-icon']}><rect x="3" y="3" width="7" height="9" /><rect x="14" y="3" width="7" height="5" /><rect x="14" y="12" width="7" height="9" /><rect x="3" y="16" width="7" height="5" /></svg>
   ),
@@ -57,9 +61,11 @@ interface NavigationProps {
   onViewChange: (view: string) => void;
   onSearchTrigger: () => void;
   logoText?: string;
+  user?: User | null;
+  onLogout?: () => void;
 }
 
-export const Navigation: React.FC<NavigationProps> = ({ activeView, onViewChange, onSearchTrigger, logoText }) => {
+export const Navigation: React.FC<NavigationProps> = ({ activeView, onViewChange, onSearchTrigger, logoText, user, onLogout }) => {
   const [viewport, setViewport] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
   const [isExpanded, setIsExpanded] = useState(true);
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
@@ -168,6 +174,39 @@ export const Navigation: React.FC<NavigationProps> = ({ activeView, onViewChange
             </div>
           ))}
         </nav>
+
+        {user && (
+          <div className={isExpanded ? styles['profile-container'] : styles['profile-collapsed']}>
+            <div 
+              style={{ display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer' }}
+              onClick={() => onViewChange('profile')}
+            >
+              <div className={styles.avatar}>
+                {user.avatarUrl ? (
+                  <img src={user.avatarUrl} alt={user.name} style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
+                ) : (
+                  user.name.split(' ').map(n => n[0]).join('')
+                )}
+              </div>
+              {isExpanded && (
+                <div className={styles['profile-info']}>
+                  <div className={styles['profile-name']}>{user.name}</div>
+                  <div className={styles['profile-role']}>{user.role}</div>
+                </div>
+              )}
+            </div>
+            {onLogout && (
+              <button 
+                onClick={onLogout} 
+                className={isExpanded ? styles['logout-btn'] : styles['logout-btn-collapsed']}
+                title="Sign Out"
+              >
+                <Icons.Logout />
+                {isExpanded && <span>Sign Out</span>}
+              </button>
+            )}
+          </div>
+        )}
       </aside>
     );
   }
@@ -198,6 +237,32 @@ export const Navigation: React.FC<NavigationProps> = ({ activeView, onViewChange
             );
           })}
         </nav>
+
+        {user && (
+          <div className={styles['profile-collapsed']} style={{ borderTop: '1px solid var(--border-light)', marginTop: 'auto', paddingTop: 16 }}>
+            <div 
+              className={styles.avatar} 
+              title={`${user.name} (${user.role})`}
+              style={{ cursor: 'pointer' }}
+              onClick={() => onViewChange('profile')}
+            >
+              {user.avatarUrl ? (
+                <img src={user.avatarUrl} alt={user.name} style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
+              ) : (
+                user.name.split(' ').map(n => n[0]).join('')
+              )}
+            </div>
+            {onLogout && (
+              <button 
+                onClick={onLogout} 
+                className={styles['logout-btn-collapsed']}
+                title="Sign Out"
+              >
+                <Icons.Logout />
+              </button>
+            )}
+          </div>
+        )}
       </aside>
     );
   }
@@ -290,6 +355,45 @@ export const Navigation: React.FC<NavigationProps> = ({ activeView, onViewChange
                 );
               })}
             </div>
+
+            {user && (
+              <div className={styles['profile-container']} style={{ borderTop: '1px solid var(--border-light)', marginTop: 24, padding: '20px 8px 8px 8px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', gap: 12 }}>
+                  <div 
+                    style={{ display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer' }}
+                    onClick={() => {
+                      onViewChange('profile');
+                      setIsBottomSheetOpen(false);
+                    }}
+                  >
+                    <div className={styles.avatar}>
+                      {user.avatarUrl ? (
+                        <img src={user.avatarUrl} alt={user.name} style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
+                      ) : (
+                        user.name.split(' ').map(n => n[0]).join('')
+                      )}
+                    </div>
+                    <div className={styles['profile-info']}>
+                      <div className={styles['profile-name']}>{user.name}</div>
+                      <div className={styles['profile-role']}>{user.role}</div>
+                    </div>
+                  </div>
+                  {onLogout && (
+                    <button 
+                      onClick={() => {
+                        onLogout();
+                        setIsBottomSheetOpen(false);
+                      }} 
+                      className={styles['logout-btn']}
+                      style={{ width: 'auto', padding: '8px 16px' }}
+                    >
+                      <Icons.Logout />
+                      <span>Sign Out</span>
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}

@@ -18,6 +18,14 @@ const DEFAULT_FLAGS: FeatureFlag[] = [
     value: false
   },
   {
+    id: 'login-field-type',
+    name: 'Login Field Identifier Type',
+    description: 'Select the input credential format required on the Login Screen.',
+    type: 'select',
+    value: 'Username / Email',
+    options: ['Username / Email', 'Username', 'Email', 'Employee ID']
+  },
+  {
     id: 'wms-layout-version',
     name: 'Inventory View Layout',
     description: 'Select which layout design engine to use for the Inventory dashboard.',
@@ -40,7 +48,12 @@ export const useFlags = () => {
       const saved = localStorage.getItem('cbims-feature-flags');
       if (saved) {
         try {
-          return JSON.parse(saved);
+          const parsed = JSON.parse(saved) as FeatureFlag[];
+          // Merge defaults to ensure new flags are added dynamically
+          return DEFAULT_FLAGS.map(def => {
+            const existing = parsed.find(p => p.id === def.id);
+            return existing ? { ...def, value: existing.value } : def;
+          });
         } catch (e) {
           return DEFAULT_FLAGS;
         }
