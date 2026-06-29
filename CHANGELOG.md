@@ -2,7 +2,27 @@
 
 Welcome to the CBIMS changelog! This document highlights the history of updates, improvements, and milestones in a simplified format tailored for our users and team members.
 
-## [v2.2.0] - Modular Login, Security Settings & Account Profile (Current Release)
+## [v2.3.0] - PocketBase Database & Authentication Integration (Current Release)
+
+This release connects the CBIMS React frontend to a live backend database powered by PocketBase, providing persistent user authentication, profiles, real-time SSE syncing, and local offline fallbacks.
+
+### 🌟 New Features & Enhancements
+* **PocketBase Integration:**
+  - Integrated the official `pocketbase` JS SDK to coordinate authentication, session management, and profile updates.
+  - Replaced the simple static `localStorage` session state with PocketBase's reactive `pb.authStore` session hooks.
+  - Unified user logins: Username, Email, and Employee ID logins are mapped directly to their corresponding PocketBase email address under the hood to target the same database record.
+* **Auto-Registration & Validation Padding:**
+  - Implemented an automatic client-side registration helper that creates default `admin` and `user` accounts in PocketBase upon their first login attempt.
+  - Resolved PocketBase's default 8-character password length constraint by padding shorter mock passwords on the fly (e.g. `"admin"` becomes `"admin000"`, `"user"` becomes `"user0000"`) so default developer credentials remain easy to type.
+* **PocketBase Health Indicator:**
+  - Integrated a live background health diagnostic checker (`fetch` loop) in the Login card.
+  - Added visual color status dots to both the minimized and maximized default test credentials panels, warning developers if the database server is offline.
+* **Smart Connection Fallbacks:**
+  - Added an offline fallback mechanism: if the PocketBase database is offline or unreachable, the system automatically falls back to local mock authentication so front-end testing is not interrupted.
+
+---
+
+## [v2.2.0] - Modular Login, Security Settings & Account Profile
 
 This release implements a modern Login System with RBAC controls, dynamic credential formats, and a brand-new Account Profile workspace.
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './LoginScreen.module.css';
 import { GlowElements } from '../Common/GlowElements';
 import { ForgotPassword } from './ForgotPassword';
@@ -6,7 +6,7 @@ import { ForgotPassword } from './ForgotPassword';
 interface LoginScreenProps {
   logoText: string;
   fieldType: string;
-  onLogin: (username: string, password: string) => string | null;
+  onLogin: (username: string, password: string) => Promise<string | null> | string | null;
 }
 
 export const LoginScreen: React.FC<LoginScreenProps> = ({ logoText, fieldType, onLogin }) => {
@@ -19,6 +19,29 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ logoText, fieldType, o
   const [showPassword, setShowPassword] = useState(false);
   // TEMPORARY: State to control floating credential test card. Can be removed in production.
   const [helperState, setHelperState] = useState<'maximized' | 'minimized'>('maximized');
+  const [pbStatus, setPbStatus] = useState<'checking' | 'running' | 'offline'>('checking');
+
+  useEffect(() => {
+    let isMounted = true;
+    const checkHealth = async () => {
+      try {
+        const response = await fetch('http://localhost:8090/api/health');
+        if (response.ok) {
+          if (isMounted) setPbStatus('running');
+        } else {
+          if (isMounted) setPbStatus('offline');
+        }
+      } catch (err) {
+        if (isMounted) setPbStatus('offline');
+      }
+    };
+    checkHealth();
+    const interval = setInterval(checkHealth, 5000);
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
+  }, []);
 
   const getPlaceholder = () => {
     switch (fieldType) {
@@ -37,7 +60,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ logoText, fieldType, o
     return (fieldType === 'Email' || fieldType === 'Email Only') ? 'email' : 'text';
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
@@ -48,13 +71,16 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ logoText, fieldType, o
 
     setIsLoading(true);
 
-    setTimeout(() => {
-      const loginError = onLogin(username, password);
+    try {
+      const loginError = await onLogin(username, password);
       setIsLoading(false);
       if (loginError) {
         setError(loginError);
       }
-    }, 600);
+    } catch (err: any) {
+      setIsLoading(false);
+      setError(err?.message || 'Login failed');
+    }
   };
 
   return (
@@ -65,6 +91,15 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ logoText, fieldType, o
       {helperState === 'minimized' && (
         <div className={styles.helperCardMinimized} onClick={() => setHelperState('maximized')}>
           <span>🔑 Show Credentials</span>
+          <span style={{
+            width: 8,
+            height: 8,
+            borderRadius: '50%',
+            backgroundColor: pbStatus === 'running' ? '#10b981' : pbStatus === 'checking' ? '#f59e0b' : '#ef4444',
+            display: 'inline-block',
+            marginLeft: 4,
+            boxShadow: pbStatus === 'running' ? '0 0 6px #10b981' : 'none'
+          }}></span>
         </div>
       )}
 
@@ -102,6 +137,27 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ logoText, fieldType, o
             </div>
             <div className={styles.helperItem}>
               <span>Password:</span> <span className={styles.helperValue}>user</span>
+            </div>
+          </div>
+          <div className={styles.helperSection} style={{ marginTop: 4, paddingTop: 12, borderTop: '1px solid var(--border-light)' }}>
+            <div className={styles.helperItem} style={{ borderBottom: 'none', paddingBottom: 0, alignItems: 'center' }}>
+              <span>PocketBase Server:</span>
+              <span style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                fontWeight: 600,
+                color: pbStatus === 'running' ? '#10b981' : pbStatus === 'checking' ? '#f59e0b' : '#ef4444'
+              }}>
+                <span style={{
+                  width: 8,
+                  height: 8,
+                  borderRadius: '50%',
+                  backgroundColor: pbStatus === 'running' ? '#10b981' : pbStatus === 'checking' ? '#f59e0b' : '#ef4444',
+                  boxShadow: pbStatus === 'running' ? '0 0 8px #10b981' : 'none'
+                }}></span>
+                {pbStatus === 'running' ? 'Running' : pbStatus === 'checking' ? 'Checking...' : 'Offline'}
+              </span>
             </div>
           </div>
         </div>

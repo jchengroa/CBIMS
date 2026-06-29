@@ -245,7 +245,7 @@ export const SettingsModule: React.FC<SettingsModuleProps> = ({ theme, onThemeCh
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
           <span>CBIMS | Cloud-Based Inventory Management System</span>
-          <span>Version 2.2.0</span>
+          <span>Version 2.3.0</span>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
           <span>Created by: @jchengroa</span>
